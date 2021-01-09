@@ -1,18 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import _ from 'lodash';
-
-const getAbsolutePath = (filepath) => {
-  if (filepath.startsWith('/')) {
-    return filepath;
-  }
-  return path.resolve(process.cwd(), filepath);
-};
-
-const readFile = (filepath) => {
-  const absolutePath = getAbsolutePath(filepath);
-  return fs.readFileSync(absolutePath, 'utf-8');
-};
+import parse from './parsers.js';
 
 const formatToStylish = (json) => {
   const innerData = Object.keys(json)
@@ -21,8 +8,8 @@ const formatToStylish = (json) => {
 };
 
 const genDiff = (filepath1, filepath2) => {
-  const json1 = JSON.parse(readFile(filepath1).toString());
-  const json2 = JSON.parse(readFile(filepath2).toString());
+  const json1 = parse(filepath1);
+  const json2 = parse(filepath2);
   const json1Keys = Object.keys(json1);
   const json2Keys = Object.keys(json2);
 
