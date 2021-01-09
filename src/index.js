@@ -2,13 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 
-const getAbsolutePath = (filepath) => path.resolve(process.cwd(), filepath);
+const getAbsolutePath = (filepath) => {
+  if (filepath.startsWith('/')) {
+    return filepath;
+  }
+  return path.resolve(process.cwd(), filepath);
+};
 
 const readFile = (filepath) => {
-  if (filepath.startsWith('/')) {
-    return fs.readFileSync(filepath).toString();
-  }
-  return fs.readFileSync(getAbsolutePath(filepath).toString());
+  const absolutePath = getAbsolutePath(filepath);
+  return fs.readFileSync(absolutePath, 'utf-8');
 };
 
 const formatToStylish = (json) => {
@@ -18,8 +21,8 @@ const formatToStylish = (json) => {
 };
 
 const genDiff = (filepath1, filepath2) => {
-  const json1 = JSON.parse(readFile(filepath1));
-  const json2 = JSON.parse(readFile(filepath2));
+  const json1 = JSON.parse(readFile(filepath1).toString());
+  const json2 = JSON.parse(readFile(filepath2).toString());
   const json1Keys = Object.keys(json1);
   const json2Keys = Object.keys(json2);
 
