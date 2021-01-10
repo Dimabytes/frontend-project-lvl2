@@ -34,20 +34,42 @@ const formatToStylish = (obj, level) => {
   return `{\n${innerData}\n${getCloseLevelIndent(level)}}`;
 };
 
-const makeObjectsDiffUnchanged = (obj) => Object.keys(obj)
-  .map((newKey) => makeKeyDiff(obj, obj, newKey))
-  .flat();
+const makeKeyDiff = (obj1, obj2, key) => {
+  const value1 = obj1[key];
+  const value2 = obj2[key];
 
-const makeObjectsDiff = (obj1, obj2) => _.uniq([...Object.keys(obj1), ...Object.keys(obj2)])
-  .sort()
+  if (_.isObject(value1) && _.isObject(value2)) {
+    const sortedObjectsKeys = getSortedObjectsKeys(value1, value2);
+    return {
+      key,
+      value: null,
+      children: makeDiffOnKeys(sortedObjectsKeys, value1, value2),
+      type: CHANGE_TYPES.unchanged,
+    };
+  }
+
+  if (_.has(obj1, key) && _.has(obj2, key)) {
+    return makeTwoValuesDiff(value1, value2, key);
+  }
+  if (_.has(obj1, key)) {
+    return makeOneValueDiff(value1, key, CHANGE_TYPES.removed);
+  }
+  return makeOneValueDiff(value2, key, CHANGE_TYPES.added);
+};
+
+const getSortedObjectsKeys = (obj1, obj2) => _
+  .uniq([...Object.keys(obj1), ...Object.keys(obj2)])
+  .sort();
+
+const makeDiffOnKeys = (keys, obj1, obj2) => keys
   .map((newKey) => makeKeyDiff(obj1, obj2, newKey))
   .flat();
 
-const makeOneValueDiff = (val, key, type) => {
-  if (_.isObject(val)) {
+const makeOneValueDiff = (value, key, type) => {
+  if (_.isObject(value)) {
     return {
       key,
-      children: makeObjectsDiffUnchanged(val),
+      children: makeDiffOnKeys(Object.keys(value), value, value),
       value: null,
       type,
     };
@@ -55,52 +77,31 @@ const makeOneValueDiff = (val, key, type) => {
   return {
     key,
     children: [],
-    value: val,
+    value,
     type,
   };
 };
 
-const makeChangeDiff = (val1, val2, key) => {
-  if (val1 === val2) {
+const makeTwoValuesDiff = (value1, value2, key) => {
+  if (_.isEqual(value1, value2)) {
     return {
       key,
       children: [],
-      value: val1,
+      value: value1,
       type: CHANGE_TYPES.unchanged,
     };
   }
   return [
-    makeOneValueDiff(val1, key, CHANGE_TYPES.removed),
-    makeOneValueDiff(val2, key, CHANGE_TYPES.added),
+    makeOneValueDiff(value1, key, CHANGE_TYPES.removed),
+    makeOneValueDiff(value2, key, CHANGE_TYPES.added),
   ];
-};
-
-const makeKeyDiff = (obj1, obj2, key) => {
-  const val1 = obj1[key];
-  const val2 = obj2[key];
-
-  if (_.isObject(val1) && _.isObject(val2)) {
-    return {
-      key,
-      value: null,
-      children: makeObjectsDiff(val1, val2),
-      type: CHANGE_TYPES.unchanged,
-    };
-  }
-
-  if (_.has(obj1, key) && _.has(obj2, key)) {
-    return makeChangeDiff(val1, val2, key);
-  }
-  if (_.has(obj1, key)) {
-    return makeOneValueDiff(val1, key, CHANGE_TYPES.removed);
-  }
-  return makeOneValueDiff(val2, key, CHANGE_TYPES.added);
 };
 
 const genDiff = (filepath1, filepath2, format = 'stylish') => {
   const obj1 = parse(filepath1);
   const obj2 = parse(filepath2);
-  const diff = makeObjectsDiff(obj1, obj2);
+  const sortedObjectsKeys = getSortedObjectsKeys(obj1, obj2);
+  const diff = makeDiffOnKeys(sortedObjectsKeys, obj1, obj2);
   if (format === 'stylish') {
     return formatToStylish(diff, 1);
   }
