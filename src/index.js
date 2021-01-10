@@ -43,60 +43,6 @@ const makeObjectsDiff = (obj1, obj2) => _.uniq([...Object.keys(obj1), ...Object.
   .map((newKey) => makeKeyDiff(obj1, obj2, newKey))
   .flat();
 
-const makeChangeDiff = (val1, val2, key) => {
-  if (_.isObject(val1)) {
-    return [
-      {
-        key,
-        children: makeObjectsDiffUnchanged(val1),
-        value: null,
-        type: CHANGE_TYPES.removed,
-      },
-      {
-        key,
-        children: [],
-        value: val2,
-        type: CHANGE_TYPES.added,
-      },
-    ];
-  }
-  if (_.isObject(val2)) {
-    return [
-      {
-        key,
-        children: [],
-        value: val1,
-        type: CHANGE_TYPES.removed,
-      },
-      {
-        key,
-        children: makeObjectsDiffUnchanged(val2),
-        value: null,
-        type: CHANGE_TYPES.added,
-      },
-    ];
-  }
-  if (val1 === val2) {
-    return {
-      key,
-      children: [],
-      value: val1,
-      type: CHANGE_TYPES.unchanged,
-    };
-  }
-  return [{
-    key,
-    children: [],
-    value: val1,
-    type: CHANGE_TYPES.removed,
-  }, {
-    key,
-    children: [],
-    value: val2,
-    type: CHANGE_TYPES.added,
-  }];
-};
-
 const makeOneValueDiff = (val, key, type) => {
   if (_.isObject(val)) {
     return {
@@ -112,6 +58,21 @@ const makeOneValueDiff = (val, key, type) => {
     value: val,
     type,
   };
+};
+
+const makeChangeDiff = (val1, val2, key) => {
+  if (val1 === val2) {
+    return {
+      key,
+      children: [],
+      value: val1,
+      type: CHANGE_TYPES.unchanged,
+    };
+  }
+  return [
+    makeOneValueDiff(val1, key, CHANGE_TYPES.removed),
+    makeOneValueDiff(val2, key, CHANGE_TYPES.added),
+  ];
 };
 
 const makeKeyDiff = (obj1, obj2, key) => {
