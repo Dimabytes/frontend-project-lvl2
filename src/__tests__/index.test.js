@@ -15,7 +15,7 @@ describe('flat gendiff', () => {
       getFixturePath('file1.json'),
       getFixturePath('file2.json'),
     );
-    expect(diff).toBe(readFile('expected.txt').toString());
+    expect(diff).toBe(readFile('expectedStylish.txt').toString());
   });
 
   test('two yaml', () => {
@@ -23,7 +23,7 @@ describe('flat gendiff', () => {
       getFixturePath('file1.yml'),
       getFixturePath('file2.yml'),
     );
-    expect(diff).toBe(readFile('expected.txt').toString());
+    expect(diff).toBe(readFile('expectedStylish.txt').toString());
   });
 
   test('json and yaml', () => {
@@ -31,6 +31,6 @@ describe('flat gendiff', () => {
       getFixturePath('file1.json'),
       getFixturePath('file2.yml'),
     );
-    expect(diff).toBe(readFile('expected.txt').toString());
+    expect(diff).toBe(readFile('expectedStylish.txt').toString());
   });
 });
