@@ -37,7 +37,7 @@ const preFormat = (arr) => arr.map(({
 }) => ({
   key,
   type,
-  value: _.isObject(value) ? null : value,
+  value,
   children: _.isObject(value) ? preFormat(objectToDiff(value)) : preFormat(children),
 }));
 
