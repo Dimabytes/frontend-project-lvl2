@@ -43,100 +43,97 @@ const makeObjectsDiff = (obj1, obj2) => _.uniq([...Object.keys(obj1), ...Object.
   .map((newKey) => makeKeyDiff(obj1, obj2, newKey))
   .flat();
 
-const makeKeyDiff = (obj1, obj2, key) => {
-  const val1 = obj1[key];
-  const val2 = obj2[key];
-  if (_.has(obj1, key) && _.has(obj2, key)) {
-    if (_.isObject(val1) && _.isObject(val2)) {
-      return {
-        key,
-        value: null,
-        children: makeObjectsDiff(val1, val2),
-        type: CHANGE_TYPES.unchanged,
-      };
-    }
-    if (_.isObject(val1)) {
-      return [
-        {
-          key,
-          children: makeObjectsDiffUnchanged(val1),
-          value: null,
-          type: CHANGE_TYPES.removed,
-        },
-        {
-          key,
-          children: [],
-          value: val2,
-          type: CHANGE_TYPES.added,
-        },
-      ];
-    }
-    if (_.isObject(val2)) {
-      return [
-        {
-          key,
-          children: [],
-          value: val1,
-          type: CHANGE_TYPES.removed,
-        },
-        {
-          key,
-          children: makeObjectsDiffUnchanged(val2),
-          value: null,
-          type: CHANGE_TYPES.added,
-        },
-      ];
-    }
-    if (val1 === val2) {
-      return {
-        key,
-        children: [],
-        value: val1,
-        type: CHANGE_TYPES.unchanged,
-      };
-    }
-    return [{
-      key,
-      children: [],
-      value: val1,
-      type: CHANGE_TYPES.removed,
-    }, {
-      key,
-      children: [],
-      value: val2,
-      type: CHANGE_TYPES.added,
-    }];
-  }
-  if (_.has(obj1, key)) {
-    if (_.isObject(val1)) {
-      return {
+const makeChangeDiff = (val1, val2, key) => {
+  if (_.isObject(val1)) {
+    return [
+      {
         key,
         children: makeObjectsDiffUnchanged(val1),
         value: null,
         type: CHANGE_TYPES.removed,
-      };
-    }
+      },
+      {
+        key,
+        children: [],
+        value: val2,
+        type: CHANGE_TYPES.added,
+      },
+    ];
+  }
+  if (_.isObject(val2)) {
+    return [
+      {
+        key,
+        children: [],
+        value: val1,
+        type: CHANGE_TYPES.removed,
+      },
+      {
+        key,
+        children: makeObjectsDiffUnchanged(val2),
+        value: null,
+        type: CHANGE_TYPES.added,
+      },
+    ];
+  }
+  if (val1 === val2) {
     return {
       key,
       children: [],
       value: val1,
-      type: CHANGE_TYPES.removed,
+      type: CHANGE_TYPES.unchanged,
     };
   }
-  if (_.isObject(val2)) {
+  return [{
+    key,
+    children: [],
+    value: val1,
+    type: CHANGE_TYPES.removed,
+  }, {
+    key,
+    children: [],
+    value: val2,
+    type: CHANGE_TYPES.added,
+  }];
+};
+
+const makeOneValueDiff = (val, key, type) => {
+  if (_.isObject(val)) {
     return {
       key,
-      children: makeObjectsDiffUnchanged(val2),
+      children: makeObjectsDiffUnchanged(val),
       value: null,
-      type: CHANGE_TYPES.added,
+      type,
     };
   }
   return {
     key,
     children: [],
-    value: val2,
-    type: CHANGE_TYPES.added,
+    value: val,
+    type,
   };
+};
+
+const makeKeyDiff = (obj1, obj2, key) => {
+  const val1 = obj1[key];
+  const val2 = obj2[key];
+
+  if (_.isObject(val1) && _.isObject(val2)) {
+    return {
+      key,
+      value: null,
+      children: makeObjectsDiff(val1, val2),
+      type: CHANGE_TYPES.unchanged,
+    };
+  }
+
+  if (_.has(obj1, key) && _.has(obj2, key)) {
+    return makeChangeDiff(val1, val2, key);
+  }
+  if (_.has(obj1, key)) {
+    return makeOneValueDiff(val1, key, CHANGE_TYPES.removed);
+  }
+  return makeOneValueDiff(val2, key, CHANGE_TYPES.added);
 };
 
 const genDiff = (filepath1, filepath2, format = 'stylish') => {
