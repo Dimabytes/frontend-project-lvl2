@@ -62,6 +62,18 @@ const getSortedObjectsKeys = (obj1, obj2) => _
   .uniq([...Object.keys(obj1), ...Object.keys(obj2)])
   .sort();
 
+const checkSimpleKey = (obj, key, type) => {
+  if (_.has(obj, key)) {
+    return {
+      key,
+      type,
+      value: obj[key],
+      children: [],
+    };
+  }
+  return null;
+};
+
 const makeKeyDiff = (obj1, obj2, key) => {
   const value1 = obj1[key];
   const value2 = obj2[key];
@@ -83,23 +95,9 @@ const makeKeyDiff = (obj1, obj2, key) => {
     };
   }
   const diff = [];
-  if (_.has(obj1, key)) {
-    diff.push({
-      key,
-      type: CHANGE_TYPES.removed,
-      value: value1,
-      children: [],
-    });
-  }
-  if (_.has(obj2, key)) {
-    diff.push({
-      key,
-      type: CHANGE_TYPES.added,
-      value: value2,
-      children: [],
-    });
-  }
-  return diff;
+  diff.push(checkSimpleKey(obj1, key, CHANGE_TYPES.removed));
+  diff.push(checkSimpleKey(obj2, key, CHANGE_TYPES.added));
+  return diff.filter((el) => el !== null);
 };
 
 const genDiff = (filepath1, filepath2, format = 'stylish') => {
