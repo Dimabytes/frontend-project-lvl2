@@ -74,42 +74,32 @@ const makeKeyDiff = (obj1, obj2, key) => {
         .flatMap((newKey) => makeKeyDiff(value1, value2, newKey)),
     };
   }
-  if (_.has(obj1, key) && _.has(obj2, key)) {
-    if (_.isEqual(value1, value2)) {
-      return {
-        key,
-        type: CHANGE_TYPES.unchanged,
-        value: value1,
-        children: [],
-      };
-    }
-    return [{
-      key,
-      type: CHANGE_TYPES.removed,
-      value: value1,
-      children: [],
-    },
-    {
-      key,
-      type: CHANGE_TYPES.added,
-      value: value2,
-      children: [],
-    }];
-  }
-  if (_.has(obj1, key)) {
+  if (_.has(obj1, key) && _.has(obj2, key) && _.isEqual(value1, value2)) {
     return {
       key,
-      type: CHANGE_TYPES.removed,
+      type: CHANGE_TYPES.unchanged,
       value: value1,
       children: [],
     };
   }
-  return {
-    key,
-    type: CHANGE_TYPES.added,
-    value: value2,
-    children: [],
-  };
+  const diff = [];
+  if (_.has(obj1, key)) {
+    diff.push({
+      key,
+      type: CHANGE_TYPES.removed,
+      value: value1,
+      children: [],
+    });
+  }
+  if (_.has(obj2, key)) {
+    diff.push({
+      key,
+      type: CHANGE_TYPES.added,
+      value: value2,
+      children: [],
+    });
+  }
+  return diff;
 };
 
 const genDiff = (filepath1, filepath2, format = 'stylish') => {
