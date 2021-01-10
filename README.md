@@ -5,4 +5,4 @@
 [![Test coverage](https://api.codeclimate.com/v1/badges/cae235b46304d2598880/test_coverage)](https://codeclimate.com/github/Dimabytes/frontend-project-lvl2/test_coverage)
 
 ### Demo
-https://asciinema.org/a/rvJky8z0i3DqVf7ar2BuJeX8i
+https://asciinema.org/a/3uKJ2QwByFoXk5FAC4zTPqS5f

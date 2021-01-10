@@ -12,25 +12,25 @@ const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8'
 describe('flat gendiff', () => {
   test('two json', () => {
     const diff = genDiff(
-      getFixturePath('flat/file1.json'),
-      getFixturePath('flat/file2.json'),
+      getFixturePath('file1.json'),
+      getFixturePath('file2.json'),
     );
-    expect(diff).toBe(readFile('flat/expected.txt').toString());
+    expect(diff).toBe(readFile('expected.txt').toString());
   });
 
   test('two yaml', () => {
     const diff = genDiff(
-      getFixturePath('flat/file1.yml'),
-      getFixturePath('flat/file2.yml'),
+      getFixturePath('file1.yml'),
+      getFixturePath('file2.yml'),
     );
-    expect(diff).toBe(readFile('flat/expected.txt').toString());
+    expect(diff).toBe(readFile('expected.txt').toString());
   });
 
   test('json and yaml', () => {
     const diff = genDiff(
-      getFixturePath('flat/file1.json'),
-      getFixturePath('flat/file2.yml'),
+      getFixturePath('file1.json'),
+      getFixturePath('file2.yml'),
     );
-    expect(diff).toBe(readFile('flat/expected.txt').toString());
+    expect(diff).toBe(readFile('expected.txt').toString());
   });
 });
