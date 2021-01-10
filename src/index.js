@@ -23,33 +23,39 @@ const getSign = (type) => {
   }
 };
 
-const formatObj = (obj, level) => {
-  const innerData = Object.keys(obj).map((key) => {
-    const val = obj[key];
+const objectToDiff = (key, value) => ({
+  key,
+  value,
+  children: [],
+  type: CHANGE_TYPES.unchanged,
+});
+
+const preFormat = (arr) => arr.map(({
+  value, children, key, type,
+}) => ({
+  key,
+  type,
+  value: _.isObject(value) ? null : value,
+  children: _.isObject(value)
+    ? preFormat(Object.entries(value).map((keyValue) => objectToDiff(...keyValue)))
+    : preFormat(children),
+}));
+
+const outputFormat = (arr, level) => {
+  const innerData = arr.map(({
+    type, children, value, key,
+  }) => {
     const levelIndent = getLevelIndent(level);
-    const outputString = _.isObject(val) ? formatObj(val, level + 1) : val;
-    return `${levelIndent}  ${key}: ${outputString}`;
+    const sign = getSign(type);
+    const outputString = children.length > 0 ? outputFormat(children, level + 1) : value;
+    return `${levelIndent}${sign}${key}: ${outputString}`;
   }).join('\n');
   return `{\n${innerData}\n${getCloseLevelIndent(level)}}`;
 };
 
-const formatToStylish = (obj, level) => {
-  const getOutputString = (val) => {
-    if (val.children.length > 0) {
-      return formatToStylish(val.children, level + 1);
-    }
-    if (_.isObject(val.value)) {
-      return formatObj(val.value, level + 1);
-    }
-    return val.value;
-  };
-  const innerData = obj.map((val) => {
-    const levelIndent = getLevelIndent(level);
-    const sign = getSign(val.type);
-    const outputString = getOutputString(val);
-    return `${levelIndent}${sign}${val.key}: ${outputString}`;
-  }).join('\n');
-  return `{\n${innerData}\n${getCloseLevelIndent(level)}}`;
+const formatToStylish = (arr) => {
+  const preFormatted = preFormat(arr);
+  return outputFormat(preFormatted, 1);
 };
 
 const getSortedObjectsKeys = (obj1, obj2) => _
@@ -112,7 +118,7 @@ const genDiff = (filepath1, filepath2, format = 'stylish') => {
   const diff = getSortedObjectsKeys(obj1, obj2)
     .flatMap((newKey) => makeKeyDiff(obj1, obj2, newKey));
   if (format === 'stylish') {
-    return formatToStylish(diff, 1);
+    return formatToStylish(diff);
   }
   return '';
 };
