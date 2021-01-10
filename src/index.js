@@ -23,12 +23,14 @@ const getSign = (type) => {
   }
 };
 
-const objectToDiff = (key, value) => ({
-  key,
-  value,
-  children: [],
-  type: CHANGE_TYPES.unchanged,
-});
+const objectToDiff = (obj) => Object
+  .entries(obj)
+  .map(([key, value]) => ({
+    key,
+    value,
+    children: [],
+    type: CHANGE_TYPES.unchanged,
+  }));
 
 const preFormat = (arr) => arr.map(({
   value, children, key, type,
@@ -36,9 +38,7 @@ const preFormat = (arr) => arr.map(({
   key,
   type,
   value: _.isObject(value) ? null : value,
-  children: _.isObject(value)
-    ? preFormat(Object.entries(value).map((keyValue) => objectToDiff(...keyValue)))
-    : preFormat(children),
+  children: _.isObject(value) ? preFormat(objectToDiff(value)) : preFormat(children),
 }));
 
 const outputFormat = (arr, level) => {
