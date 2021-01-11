@@ -26,35 +26,39 @@ const objectToDiff = (obj) => Object
     type: 'unchanged',
   }));
 
+const formatChangedDiff = ({ value, children, key }) => {
+  const { value1, value2 } = value;
+  return [
+    {
+      key,
+      children,
+      value: value1,
+      type: 'removed',
+    },
+    {
+      key,
+      children,
+      value: value2,
+      type: 'added',
+    },
+  ];
+};
+
 const preFormat = (arr) => arr.flatMap(({
   value, children, key, type,
 }) => {
-  const getChildren = (checkValue) => (_.isObject(checkValue)
-    ? preFormat(objectToDiff(checkValue))
-    : preFormat(children)
-  );
   if (type === 'changed') {
-    const { value1, value2 } = value;
-    return [
-      {
-        key,
-        type: 'removed',
-        value: value1,
-        children: getChildren(value1),
-      },
-      {
-        key,
-        type: 'added',
-        value: value2,
-        children: getChildren(value2),
-      },
-    ];
+    return preFormat(formatChangedDiff({
+      value,
+      children,
+      key,
+    }));
   }
   return {
     key,
     type,
     value,
-    children: getChildren(value),
+    children: preFormat(_.isObject(value) ? objectToDiff(value) : children),
   };
 });
 
@@ -67,7 +71,8 @@ const outputFormat = (arr, level) => {
     const outputString = children.length > 0 ? outputFormat(children, level + 1) : value;
     return `${levelIndent}${sign}${key}: ${outputString}`;
   }).join('\n');
-  return `{\n${innerData}\n${getCloseLevelIndent(level)}}`;
+  const closeLevelIndent = getCloseLevelIndent(level);
+  return `{\n${innerData}\n${closeLevelIndent}}`;
 };
 
 const formatToStylish = (arr) => {
