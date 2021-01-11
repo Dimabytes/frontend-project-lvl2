@@ -3,7 +3,7 @@ import parse from './parsers.js';
 import getFormatter from './formatters/index.js';
 
 const getUniqSortedKeys = (obj1, obj2) => _([...Object.keys(obj1), ...Object.keys(obj2)])
-  .uniq().sort().value();
+  .uniq().sortBy().value();
 
 const makeKeyDiff = (obj1, obj2, key) => {
   const oldValue = obj1[key];
