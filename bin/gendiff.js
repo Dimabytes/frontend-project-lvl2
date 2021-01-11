@@ -6,7 +6,7 @@ const program = new Command();
 program.version('0.0.1');
 
 program
-  .option('-f, --format [type]', 'output format (default: "stylish")');
+  .option('-f, --format [type]', 'output format (default: "[type]")', 'stylish');
 
 program
   .arguments('<filepath1> <filepath2>')

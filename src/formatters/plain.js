@@ -16,7 +16,7 @@ const getPhrase = (type, value) => {
       return `added with value: ${formatValue(value)}`;
     case 'removed':
       return 'removed';
-    case 'changed':
+    case 'updated':
       return `updated. From ${formatValue(value.oldValue)} to ${formatValue(value.newValue)}`;
     default:
       return null;
@@ -42,7 +42,7 @@ function findPaths(tree) {
   return tree.flatMap((child) => iter(child, ''));
 }
 
-const outputFormat = (tree) => tree.map(({
+const formatToOutput = (tree) => tree.map(({
   type, value, path,
 }) => {
   const phrase = getPhrase(type, value);
@@ -51,7 +51,7 @@ const outputFormat = (tree) => tree.map(({
 
 const formatToPlain = (tree) => {
   const formattedTree = findPaths(tree).filter((el) => el.type !== 'unchanged');
-  return outputFormat(formattedTree);
+  return formatToOutput(formattedTree);
 };
 
 export default formatToPlain;
