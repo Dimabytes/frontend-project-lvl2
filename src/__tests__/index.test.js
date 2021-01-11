@@ -18,14 +18,6 @@ describe('flat gendiff', () => {
     expect(diff).toBe(readFile('expectedStylish.txt').toString());
   });
 
-  test('two yaml', () => {
-    const diff = genDiff(
-      getFixturePath('file1.yml'),
-      getFixturePath('file2.yml'),
-    );
-    expect(diff).toBe(readFile('expectedStylish.txt').toString());
-  });
-
   test('json and yaml', () => {
     const diff = genDiff(
       getFixturePath('file1.json'),
