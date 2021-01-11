@@ -8,7 +8,12 @@
 
 Программа определяющая разницу между двумя структурами данных. Это популярная задача, для решения которой существует множество онлайн сервисов http://www.jsondiff.com/. Подобный механизм, например, используется при выводе тестов или при автоматическом отслеживании изменении в конфигурационных файлах.
 
-## [Демо](https://asciinema.org/a/KpeOy7eUeyIN0KwsHuymJrk8p)
+[Демо шаг 1](https://asciinema.org/a/I5jPGCjij4kPuzsGoGJ15dvcY)
+
+[Демо шаг 5](https://asciinema.org/a/rvJky8z0i3DqVf7ar2BuJeX8i)
+
+[Демо шаг 6](https://asciinema.org/a/3uKJ2QwByFoXk5FAC4zTPqS5f)
+## [Демо final](https://asciinema.org/a/KpeOy7eUeyIN0KwsHuymJrk8p)
 
 * Поддержка разных входных форматов: yaml, json
 * Генерация отчета в виде plain text, stylish и json
