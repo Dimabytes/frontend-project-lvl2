@@ -40,6 +40,6 @@ describe('flat gendiff', () => {
       getFixturePath('file2.yml'),
       'plain',
     );
-    expect(diff).toBe(readFile('expectedPLain.txt').toString());
+    expect(diff).toBe(readFile('expectedPlain.txt').toString());
   });
 });
