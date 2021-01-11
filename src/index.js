@@ -7,32 +7,32 @@ const getSortedObjectsKeys = (obj1, obj2) => _
   .sort();
 
 const makeKeyDiff = (obj1, obj2, key) => {
-  const value1 = obj1[key];
-  const value2 = obj2[key];
-  if (_.isObject(value1) && _.isObject(value2)) {
-    const children = getSortedObjectsKeys(value1, value2)
-      .map((newKey) => makeKeyDiff(value1, value2, newKey));
+  const oldValue = obj1[key];
+  const newValue = obj2[key];
+  if (_.isObject(oldValue) && _.isObject(newValue)) {
+    const children = getSortedObjectsKeys(oldValue, newValue)
+      .map((newKey) => makeKeyDiff(oldValue, newValue, newKey));
     return {
       key, type: 'unchanged', value: null, children,
     };
   }
   if (_.has(obj1, key) && _.has(obj2, key)) {
-    if (_.isEqual(value1, value2)) {
+    if (_.isEqual(oldValue, newValue)) {
       return {
-        key, type: 'unchanged', value: value1, children: [],
+        key, type: 'unchanged', value: oldValue, children: [],
       };
     }
     return {
-      key, type: 'changed', value: { value1, value2 }, children: [],
+      key, type: 'changed', value: { oldValue, newValue }, children: [],
     };
   }
   if (_.has(obj1, key)) {
     return {
-      key, type: 'removed', value: value1, children: [],
+      key, type: 'removed', value: oldValue, children: [],
     };
   }
   return {
-    key, type: 'added', value: value2, children: [],
+    key, type: 'added', value: newValue, children: [],
   };
 };
 

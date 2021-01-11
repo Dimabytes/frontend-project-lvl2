@@ -27,24 +27,24 @@ const objectToDiff = (obj) => Object
   }));
 
 const formatChangedDiff = ({ value, children, key }) => {
-  const { value1, value2 } = value;
+  const { oldValue, newValue } = value;
   return [
     {
       key,
       children,
-      value: value1,
+      value: oldValue,
       type: 'removed',
     },
     {
       key,
       children,
-      value: value2,
+      value: newValue,
       type: 'added',
     },
   ];
 };
 
-const preFormat = (arr) => arr.flatMap(({
+const preFormat = (tree) => tree.flatMap(({
   value, children, key, type,
 }) => {
   if (type === 'changed') {
@@ -62,8 +62,8 @@ const preFormat = (arr) => arr.flatMap(({
   };
 });
 
-const outputFormat = (arr, level) => {
-  const innerData = arr.map(({
+const outputFormat = (tree, level) => {
+  const innerData = tree.map(({
     type, children, value, key,
   }) => {
     const levelIndent = getLevelIndent(level);
@@ -75,9 +75,9 @@ const outputFormat = (arr, level) => {
   return `{\n${innerData}\n${closeLevelIndent}}`;
 };
 
-const formatToStylish = (arr) => {
-  const preFormatted = preFormat(arr);
-  return outputFormat(preFormatted, 1);
+const formatToStylish = (tree) => {
+  const preFormattedTree = preFormat(tree);
+  return outputFormat(preFormattedTree, 1);
 };
 
 export default formatToStylish;

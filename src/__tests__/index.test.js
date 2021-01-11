@@ -33,4 +33,13 @@ describe('flat gendiff', () => {
     );
     expect(diff).toBe(readFile('expectedStylish.txt').toString());
   });
+
+  test('plain', () => {
+    const diff = genDiff(
+      getFixturePath('file1.json'),
+      getFixturePath('file2.yml'),
+      'plain',
+    );
+    expect(diff).toBe(readFile('expectedPLain.txt').toString());
+  });
 });

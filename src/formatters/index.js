@@ -1,10 +1,11 @@
-import formatToStylish from './stylish';
+import formatToStylish from './stylish.js';
+import formatToPlain from './plain.js';
 
 const getFormatter = (format) => {
   if (format === 'stylish') {
     return formatToStylish;
   } if (format === 'plain') {
-    return null;
+    return formatToPlain;
   }
   return null;
 };
