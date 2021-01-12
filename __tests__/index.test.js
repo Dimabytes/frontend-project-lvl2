@@ -9,13 +9,18 @@ const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
+const expectedStylish = readFile('expectedStylish.txt');
+const expectedPlain = readFile('expectedPlain.txt');
+const expectedJson = readFile('expectedJson.txt');
+
 describe('flat gendiff', () => {
   test('two json', () => {
     const diff = genDiff(
       getFixturePath('file1.json'),
       getFixturePath('file2.json'),
+      'stylish',
     );
-    expect(diff).toBe(readFile('expectedStylish.txt').toString());
+    expect(diff).toBe(expectedStylish);
   });
 
   test('json and yaml', () => {
@@ -23,7 +28,7 @@ describe('flat gendiff', () => {
       getFixturePath('file1.json'),
       getFixturePath('file2.yml'),
     );
-    expect(diff).toBe(readFile('expectedStylish.txt').toString());
+    expect(diff).toBe(expectedStylish);
   });
 
   test('plain formatter', () => {
@@ -32,7 +37,7 @@ describe('flat gendiff', () => {
       getFixturePath('file2.yml'),
       'plain',
     );
-    expect(diff).toBe(readFile('expectedPlain.txt').toString());
+    expect(diff).toBe(expectedPlain);
   });
   test('json formatter', () => {
     const diff = genDiff(
@@ -40,6 +45,6 @@ describe('flat gendiff', () => {
       getFixturePath('file2.yml'),
       'json',
     );
-    expect(diff).toBe(readFile('expectedJson.txt').toString());
+    expect(diff).toBe(expectedJson);
   });
 });

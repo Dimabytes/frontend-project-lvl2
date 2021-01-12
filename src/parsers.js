@@ -16,7 +16,7 @@ const readFile = (filepath) => {
 
 const parse = (filepath) => {
   const format = path.extname(filepath);
-  const data = readFile(filepath).toString();
+  const data = readFile(filepath);
   switch (format) {
     case '.json':
       return JSON.parse(data);
