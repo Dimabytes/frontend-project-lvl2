@@ -13,7 +13,7 @@ const expectedStylish = readFile('expectedStylish.txt');
 const expectedPlain = readFile('expectedPlain.txt');
 const expectedJson = readFile('expectedJson.txt');
 
-describe('flat gendiff', () => {
+describe('gendiff', () => {
   test('two json', () => {
     const diff = genDiff(
       getFixturePath('file1.json'),
