@@ -17,7 +17,7 @@ const getPhrase = (type, value) => {
     case 'removed':
       return 'removed';
     case 'updated':
-      return `updated. From ${formatValue(value.oldValue)} to ${formatValue(value.newValue)}`;
+      return `updated. From ${formatValue(value.value1)} to ${formatValue(value.value2)}`;
     default:
       return null;
   }
@@ -25,33 +25,24 @@ const getPhrase = (type, value) => {
 
 const buildPath = (path, newElem) => `${path}${newElem}.`;
 
-function findPaths(tree) {
-  const iter = ({
-    type, value, key, children,
-  }, currentPath) => {
-    if (children.length === 0) {
-      return {
-        value,
-        type,
-        path: buildPath(currentPath, key).slice(0, -1),
-      };
-    }
-    return children
-      .flatMap((child) => iter(child, buildPath(currentPath, key)));
-  };
-  return tree.flatMap((child) => iter(child, ''));
-}
-
-const formatToOutput = (tree) => tree.map(({
-  type, value, path,
-}) => {
-  const phrase = getPhrase(type, value);
-  return `Property '${path}' was ${phrase}`;
-}).join('\n');
-
 const formatToPlain = (tree) => {
-  const formattedTree = findPaths(tree).filter((el) => el.type !== 'unchanged');
-  return formatToOutput(formattedTree);
+  const iter = (currentTree, path) => currentTree.flatMap(({
+    type, value, key, children,
+  }) => {
+    const currentPath = buildPath(path, key);
+    if (children.length > 0) {
+      return iter(children, currentPath);
+    }
+    if (type === 'unchanged') {
+      return null;
+    }
+    const phrase = getPhrase(type, value);
+    return `Property '${currentPath.slice(0, -1)}' was ${phrase}`;
+  });
+
+  return iter(tree, '')
+    .filter((el) => el !== null)
+    .join('\n');
 };
 
 export default formatToPlain;
