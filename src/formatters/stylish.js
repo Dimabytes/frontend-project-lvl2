@@ -4,12 +4,6 @@ const replacer = ' ';
 const spacesCount = 4;
 const signSize = 2;
 
-const signs = {
-  added: '+ ',
-  removed: '- ',
-  unchanged: '  ',
-};
-
 const stringify = (value, startDepth = 1) => {
   const iter = (currentValue, depth) => {
     if (!_.isObject(currentValue)) {
@@ -37,23 +31,26 @@ const formatToStylish = (tree) => {
     const bracketIndent = replacer.repeat(indentSize - signSize);
 
     const lines = currentTree
-      .flatMap((child) => {
-        if (child.type === 'updated') {
-          return [{
-            key: child.key, children: [], value: child.value.value1, type: 'removed',
-          }, {
-            key: child.key, children: [], value: child.value.value2, type: 'added',
-          }];
-        }
-        return child;
-      })
-      .map(({
+      .flatMap(({
         type, children, value, key,
       }) => {
-        const outputString = children.length > 0
-          ? iter(children, depth + 1)
-          : stringify(value, depth + 1);
-        return `${currentIndent}${signs[type]}${key}: ${outputString}`;
+        switch (type) {
+          case 'nested':
+            return `${currentIndent}  ${key}: ${iter(children, depth + 1)}`;
+          case 'updated':
+            return [
+              `${currentIndent}- ${key}: ${stringify(value.value1, depth + 1)}`,
+              `${currentIndent}+ ${key}: ${stringify(value.value2, depth + 1)}`,
+            ];
+          case 'added':
+            return `${currentIndent}+ ${key}: ${stringify(value, depth + 1)}`;
+          case 'removed':
+            return `${currentIndent}- ${key}: ${stringify(value, depth + 1)}`;
+          case 'unchanged':
+            return `${currentIndent}  ${key}: ${stringify(value, depth + 1)}`;
+          default:
+            return null;
+        }
       });
 
     return [

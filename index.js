@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import parse from './src/parsers.js';
 import format from './src/formatters/index.js';
-import makeKeyDiff from './src/makeDiff.js';
+import makeObjectsDiff from './src/makeObjectsDiff.js';
 
 const readFile = (filepath) => fs.readFileSync(filepath, 'utf-8');
 
@@ -13,7 +13,7 @@ const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const rawFile2 = readFile(filepath2);
   const obj1 = parse(rawFile1, getFormat(filepath1));
   const obj2 = parse(rawFile2, getFormat(filepath2));
-  const diff = makeKeyDiff(obj1, obj2);
+  const diff = makeObjectsDiff(obj1, obj2);
   return format(diff, formatName);
 };
 
