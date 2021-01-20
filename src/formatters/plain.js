@@ -25,8 +25,10 @@ const formatToPlain = (tree) => {
         return `Property '${builtPath}' was removed`;
       case 'updated':
         return `Property '${builtPath}' was updated. From ${formatValue(value.value1)} to ${formatValue(value.value2)}`;
-      default:
+      case 'unchanged':
         return null;
+      default:
+        throw new Error(`Unknown node type ${type}`);
     }
   });
 

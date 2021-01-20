@@ -49,7 +49,7 @@ const formatToStylish = (tree) => {
           case 'unchanged':
             return `${currentIndent}  ${key}: ${stringify(value, depth + 1)}`;
           default:
-            return null;
+            throw new Error(`Unknown node type ${type}`);
         }
       });
 
